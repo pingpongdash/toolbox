@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+
+import subprocess
+from lib import parsers
+from lib.defaults import defaults
+from dotenv import dotenv_values
+
+
+def main():
+    settings = parsers.load_settings(defaults['settings'])
+    env_vars = dotenv_values(".env")
+    print()
+
+    enter_command = ['docker', 'exec', '-ti']
+    user = []
+    shell = '/bin/bash'
+
+    if 'APP_USER' in env_vars and env_vars['APP_USER']:
+        user = ['-u', env_vars['APP_USER']]
+        
+    if 'SHELL' in env_vars and env_vars['SHELL']:
+        shell = env_vars['SHELL']
+        
+    enter_command.extend(user)
+    enter_command.append(settings['container_name'])
+    enter_command.append(shell)
+
+    result = subprocess.run(enter_command, check=False)
+    if result.returncode != 0:
+        print(f"Error: Command failed with exit code {result.returncode}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import subprocess
+import json
+
+from lib.argument_parser import parse_arguments
+from lib.environment import load_settings, replace_shell_commands, generate_env_file
+from lib.docker_compose import generate_compose
+from lib.defaults import defaults, required_keys
+
+def boot_container():
+    subprocess.run(['docker-compose', 'up', '--build', '-d',], check=False)
+
+def main():
+    current_directory = os.getcwd()
+    print("Current working directory:", current_directory)
+    # print(json.dumps(defaults, indent=4, ensure_ascii=False))
+    # Parse arguments to allow flexibility in passing custom settings file, etc.
+    args = parse_arguments(defaults)
+
+    # If 'noconf' flag is set, boot the container directly without generating compose
+    if args.noconf:
+        boot_container()
+        sys.exit(0)
+
+    # Load the settings from 'settings.yml' in the current directory
+    settings = load_settings(defaults['settings'])
+
+    generate_env_file(settings, defaults['dot_env'])
+    # Generate the Docker Compose configuration using the parsed settings
+
+    generate_compose(settings)
+
+    # Boot the container unless 'noboot' flag is set
+    if not args.noboot:
+        boot_container()
+
+main()
