@@ -2,16 +2,18 @@
 
 import os
 import sys
-import subprocess
-import json
 
+from lib import parsers
 from lib.argument_parser import parse_arguments
-from lib.environment import load_settings, replace_shell_commands, generate_env_file
+from lib.environment import    load_settings, replace_shell_commands, generate_env_file
 from lib.docker_compose import generate_compose
 from lib.defaults import defaults, required_keys
+from lib.compose_runner import run_compose_command
 
 def boot_container():
-    subprocess.run(['docker-compose', 'up', '--build', '-d',], check=False)
+    settings = parsers.load_settings(defaults['settings'])
+    run_compose_command(['up', '--build', '-d'])
+
 
 def main():
     current_directory = os.getcwd()
@@ -37,4 +39,5 @@ def main():
     if not args.noboot:
         boot_container()
 
+# if __name__ == "__main__":
 main()

@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-import subprocess
 from lib import parsers
 from lib.defaults import defaults
-
+from lib.compose_runner import run_compose_command
 
 def main():
     settings = parsers.load_settings(defaults['settings'])
-    subprocess.run(['docker-compose', 'down', '--rmi', 'all',], check=True)
+    run_compose_command(['down', '--rmi', 'all'])
 
 main()
+
