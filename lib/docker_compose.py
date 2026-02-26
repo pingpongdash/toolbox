@@ -4,7 +4,6 @@ from lib.defaults import defaults, required_keys
 
 def generate_compose(settings):
     docker_compose = {
-        'version': '3.8',  # Set the version of Docker Compose
         'services': {},
         'networks': {}
     }
